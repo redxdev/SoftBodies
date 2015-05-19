@@ -457,7 +457,7 @@ void SimulationWorld::ResolveCollisions(int ConfigurationIndex)
 	Config.AngularMomentum -= (NConfig.Position - Config.CMPosition).cross(Force * Body.OneOverMass) * 100000.f;
 	Config.AngularVelocity = Config.InverseWorldInertiaTensor * Config.AngularMomentum;
 
-	NConfig.Velocity += Force;
+	NConfig.Velocity += Force * 4.f;
 }
 
 void SimulationWorld::ResetSprings()
@@ -466,7 +466,7 @@ void SimulationWorld::ResetSprings()
 	{
 		SphereBody& Body = Spheres[BodyIndex];
 
-		float d2 = 0.2;
+		float d2 = 0.3;
 		float dX2 = d2;
 		float dY2 = d2;
 		float dZ2 = d2;
