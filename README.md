@@ -1,7 +1,7 @@
 # Soft Bodies
 
 Simple soft body/rigid body interaction. The cloth is actually a set of springs rather than
-cloth. Some code is based on Chris Hecker's 3d sample code.
+cloth. Some code is based on Chris Hecker's 3d sample code. Created for the Advanced Game Physics course within the Interactive Games and Media department at the Rochester Institute of Technology.
 
 # Building
 
