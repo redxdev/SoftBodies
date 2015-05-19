@@ -44,15 +44,16 @@ void PhysicsApp::setup()
 	World = new SimulationWorld(WORLD_SIZE, WORLD_SIZE, WORLD_SIZE);
 
 	Params = params::InterfaceGl("Simulation", Vec2i(225, 200));
-	Params.addParam("Wireframe", &World->Wireframe);
-	Params.addParam("Draw Cloth", &World->DrawCloth);
 	Params.addParam("Gravity", &World->Gravity, "axisx=-z axisy=-x axisz=y");
 	Params.addSeparator();
+	Params.addParam("Enable Ball", &World->EnableBall);
+	Params.addParam("Wireframe", &World->Wireframe);
+	Params.addParam("Draw Cloth", &World->DrawCloth);
 	Params.addParam("Spring Length", &World->SpringLength, "min=0.1 max=5.0");
-	Params.addParam("Spring Constant", &World->SpringConstant, "min=0.1 max=100");
+	Params.addParam("Spring Constant", &World->SpringConstant, "min=0.1 max=10");
 	Params.addParam("Random Locked Points", &World->RandomLockedPoints);
 	Params.addParam("No Locked Points", &World->NoLockedPoints);
-	Params.addButton("Reset Springs", std::bind(&SimulationWorld::ResetSprings, World));
+	Params.addButton("Reset Simulation", std::bind(&SimulationWorld::ResetSprings, World));
 }
 
 void PhysicsApp::mouseDown( MouseEvent event )

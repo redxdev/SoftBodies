@@ -10,7 +10,7 @@
 #define MAX_BOUNDING_VERTICES 20
 #define NUM_CONFIGURATIONS 2
 #define NUM_WALLS 6
-#define NUM_BODIES 8
+#define NUM_BODIES 1
 #define WORLD_SIZE 8
 
 #define NUM_SPRING_CONNECTIONS 4
@@ -40,18 +40,11 @@ struct BodyConfiguration
 	ci::Vec3f BoundingVertices[MAX_BOUNDING_VERTICES];
 };
 
-struct RigidBody
+struct SphereBody
 {
 	float OneOverMass;
 	ci::Matrix33f InverseBodyInertiaTensor;
 	float CoefficientOfRestitution;
-
-	unsigned int NumberOfBoundingVertices;
-	ci::Vec3f BoundingVertices[MAX_BOUNDING_VERTICES];
-
-	// a bit of a hack; easier to store the scale when the body is generated
-	// than to calculate it from the vertices
-	ci::Vec3f Scale;
 
 	BodyConfiguration Configurations[NUM_CONFIGURATIONS];
 };
@@ -98,20 +91,21 @@ public:
 
 	ci::Vec3f Gravity;
 	float SpringLength = 0.3f;
-	float SpringConstant = 20.f;
+	float SpringConstant = 10.f;
 	bool Wireframe = true;
 	bool DrawCloth = false;
 	bool RandomLockedPoints = false;
 	bool NoLockedPoints = false;
+	bool EnableBall = false;
 
 private:
 	void InitializeBodies();
 
 	CollisionState State;
 
-	ci::Vec3f CollisionNormal;
-	int CollidingBodyIndex;
-	int CollidingCornerIndex;
+	int SpringCollisionX;
+	int SpringCollisionY;
+	int SphereCollisionIndex;
 
 	int SourceConfigurationIndex;
 	int TargetConfigurationIndex;
@@ -120,11 +114,10 @@ private:
 	void Integrate(float DeltaTime);
 	CollisionState CheckForCollisions(int ConfigurationIndex);
 	void ResolveCollisions(int ConfigurationIndex);
-	void CalculateVertices(int ConfigurationIndex);
 
 	Wall Walls[NUM_WALLS];
 
-	RigidBody Bodies[NUM_BODIES];
+	SphereBody Spheres[NUM_BODIES];
 	SpringNode Nodes[NUM_SPRING_X][NUM_SPRING_Y];
 
 	int WorldSize = WORLD_SIZE;

@@ -69,87 +69,6 @@ float GenerateReasonableRandomReal()
 
 void SimulationWorld::InitializeBodies()
 {
-	for (int BodyIndex = 0; BodyIndex < NUM_BODIES; BodyIndex++)
-	{
-		RigidBody& Body = Bodies[BodyIndex];
-
-		float dX2 = GenerateReasonableRandomReal();
-		float dY2 = GenerateReasonableRandomReal();
-		float dZ2 = GenerateReasonableRandomReal();
-
-		Vec3f Position = Vec3f(GenerateReasonableRandomReal()*5, GenerateReasonableRandomReal()*5, GenerateReasonableRandomReal()*5);
-		Body.Configurations[0].CMPosition = Position;
-		Body.Configurations[1].CMPosition = Position;
-
-		Body.Scale = Vec3f(dX2*2, dY2*2, dZ2*2);
-
-		float Density = 0.4f;
-		float Mass = 8.f*Density*dX2*dY2*dZ2;
-		assert(Mass > 0.f);
-		
-		Body.OneOverMass = 1.f/Mass;
-		Body.InverseBodyInertiaTensor.at(0, 0) = 3.f / (Mass*(dY2*dY2 + dZ2*dZ2));
-		Body.InverseBodyInertiaTensor.at(1, 1) = 3.f / (Mass*(dX2*dX2 + dZ2*dZ2));
-		Body.InverseBodyInertiaTensor.at(2, 2) = 3.f / (Mass*(dX2*dX2 + dY2*dY2));
-
-		Body.CoefficientOfRestitution = 1.f;
-
-		glNewList(BodyIndex+1, GL_COMPILE);
-			glColor3f(GenerateUnitRandomReal(),
-				GenerateUnitRandomReal(),
-				GenerateUnitRandomReal());
-
-			glBegin(GL_QUADS);
-				glNormal3f(-1.0F, 0.0F, 0.0F);
-				glTexCoord2f(0.0F, 1.0F); glVertex3f(-dX2, -dY2, -dZ2);
-				glTexCoord2f(0.0F, 0.0F); glVertex3f(-dX2, -dY2, dZ2);
-				glTexCoord2f(1.0F, 0.0F); glVertex3f(-dX2, dY2, dZ2);
-				glTexCoord2f(1.0F, 1.0F); glVertex3f(-dX2, dY2, -dZ2);
-
-				glNormal3f(1.0F, 0.0F, 0.0F);
-				glTexCoord2f(1.0F, 1.0F); glVertex3f(dX2, dY2, dZ2);
-				glTexCoord2f(0.0F, 1.0F); glVertex3f(dX2, -dY2, dZ2);
-				glTexCoord2f(0.0F, 0.0F); glVertex3f(dX2, -dY2, -dZ2);
-				glTexCoord2f(1.0F, 0.0F); glVertex3f(dX2, dY2, -dZ2);
-
-				glNormal3f(0.0F, -1.0F, 0.0F);
-				glTexCoord2f(0.0F, 1.0F); glVertex3f(-dX2, -dY2, -dZ2);
-				glTexCoord2f(0.0F, 0.0F); glVertex3f(dX2, -dY2, -dZ2);
-				glTexCoord2f(1.0F, 0.0F); glVertex3f(dX2, -dY2, dZ2);
-				glTexCoord2f(1.0F, 1.0F); glVertex3f(-dX2, -dY2, dZ2);
-
-				glNormal3f(0.0F, 1.0F, 0.0F);
-				glTexCoord2f(1.0F, 1.0F); glVertex3f(dX2, dY2, dZ2);
-				glTexCoord2f(0.0F, 1.0F); glVertex3f(dX2, dY2, -dZ2);
-				glTexCoord2f(0.0F, 0.0F); glVertex3f(-dX2, dY2, -dZ2);
-				glTexCoord2f(1.0F, 0.0F); glVertex3f(-dX2, dY2, dZ2);
-
-				glNormal3f(0.0F, 0.0F, -1.0F);
-				glTexCoord2f(0.0F, 1.0F); glVertex3f(-dX2, -dY2, -dZ2);
-				glTexCoord2f(0.0F, 0.0F); glVertex3f(-dX2, dY2, -dZ2);
-				glTexCoord2f(1.0F, 0.0F); glVertex3f(dX2, dY2, -dZ2);
-				glTexCoord2f(1.0F, 1.0F); glVertex3f(dX2, -dY2, -dZ2);
-
-				glNormal3f(0.0F, 0.0F, 1.0F);
-				glTexCoord2f(1.0F, 1.0F); glVertex3f(dX2, dY2, dZ2);
-				glTexCoord2f(0.0F, 1.0F); glVertex3f(-dX2, dY2, dZ2);
-				glTexCoord2f(0.0F, 0.0F); glVertex3f(-dX2, -dY2, dZ2);
-				glTexCoord2f(1.0F, 0.0F); glVertex3f(dX2, -dY2, dZ2);
-			glEnd();
-		glEndList();
-
-		assert(MAX_BOUNDING_VERTICES > 8);
-		Body.NumberOfBoundingVertices = 8;
-		Body.BoundingVertices[0] = Vec3f(dX2, dY2, dZ2);
-		Body.BoundingVertices[1] = Vec3f(dX2, dY2, -dZ2);
-		Body.BoundingVertices[2] = Vec3f(dX2, -dY2, dZ2);
-		Body.BoundingVertices[3] = Vec3f(dX2, -dY2, -dZ2);
-		Body.BoundingVertices[4] = Vec3f(-dX2, dY2, dZ2);
-		Body.BoundingVertices[5] = Vec3f(-dX2, dY2, -dZ2);
-		Body.BoundingVertices[6] = Vec3f(-dX2, -dY2, dZ2);
-		Body.BoundingVertices[7] = Vec3f(-dX2, -dY2, -dZ2);
-	}
-
 	ResetSprings();
 }
 
@@ -175,8 +94,6 @@ SimulationWorld::SimulationWorld(float WorldX, float WorldY, float WorldZ)
 	Walls[4].d = WorldZ / 2.f;
 	Walls[5].Normal = Vec3f(0, 0, 1);
 	Walls[5].d = WorldZ / 2.f;
-
-	CalculateVertices(0);
 }
 
 SimulationWorld::~SimulationWorld()
@@ -187,25 +104,25 @@ SimulationWorld::~SimulationWorld()
 void SimulationWorld::Render()
 {
 	glEnable(GL_LIGHTING);
-	for (int Counter = 0; Counter < NUM_BODIES; Counter++)
+
+	if (EnableBall)
 	{
-		Matrix33f& Orientation = Bodies[Counter].Configurations[SourceConfigurationIndex].Orientation;
-		Vec3f& CMPosition = Bodies[Counter].Configurations[SourceConfigurationIndex].CMPosition;
-		float M[16];
+		glColor3f(0.8f, 0.f, 0.3f);
+		for (int i = 0; i < NUM_BODIES; ++i)
+		{
+			Matrix33f& Orientation = Spheres[i].Configurations[SourceConfigurationIndex].Orientation;
+			Vec3f& CMPosition = Spheres[i].Configurations[SourceConfigurationIndex].CMPosition;
+			float M[16];
 
-		glPushMatrix();
-			CreateOpenGLTransform(Orientation, CMPosition, M);
-			glMultMatrixf(M);
-			glCallList(Counter+1);
-		glPopMatrix();
-
-		// debugging stuff, there should be z-fighting if OBBs are working correctly
-		//OBB box = CreateOBB(Bodies[Counter], SourceConfigurationIndex);
-		//DrawOBB(box);
+			glPushMatrix();
+				CreateOpenGLTransform(Orientation, CMPosition, M);
+				glMultMatrixf(M);
+				gl::drawSphere(Vec3f(0, 0, 0), 1.f, 24);
+			glPopMatrix();
+		}
 	}
 
-
-	glColor3f(1.f, 0.f, 0.f);
+	glColor3f(0.8f, 0.f, 0.f);
 	for (int X = 0; X < NUM_SPRING_X - 1; ++X)
 	{
 		for (int Y = 0; Y < NUM_SPRING_Y - 1; ++Y)
@@ -251,6 +168,7 @@ void SimulationWorld::Render()
 
 	assert(NUM_WALLS == 6);
 
+	/*
 	// draw walls
 	glColor3f(1.0f, 1.0f, 1.0f);
 	// do a big linestrip to get most of edges
@@ -287,7 +205,7 @@ void SimulationWorld::Render()
 
 		glVertex3f(WorldSize / 2.f, -WorldSize / 2.f, -WorldSize / 2.f);
 		glVertex3f(WorldSize / 2.f, WorldSize / 2.f, -WorldSize / 2.f);
-	glEnd();
+	glEnd();*/
 }
 
 void SimulationWorld::Simulate(float DeltaTime)
@@ -299,8 +217,6 @@ void SimulationWorld::Simulate(float DeltaTime)
 		ComputeForces(SourceConfigurationIndex);
 
 		Integrate(TargetTime - CurrentTime);
-
-		CalculateVertices(TargetConfigurationIndex);
 
 		CheckForCollisions(TargetConfigurationIndex);
 
@@ -320,9 +236,9 @@ void SimulationWorld::Simulate(float DeltaTime)
 					ResolveCollisions(TargetConfigurationIndex);
 					Counter++;
 				}
-				while (CheckForCollisions(TargetConfigurationIndex) == CollisionState::Colliding && Counter < 100);
+				while (CheckForCollisions(TargetConfigurationIndex) == CollisionState::Colliding && Counter < 1000);
 
-				assert(Counter < 100);
+				//assert(Counter < 100);
 			}
 
 			CurrentTime = TargetTime;
@@ -336,25 +252,26 @@ void SimulationWorld::Simulate(float DeltaTime)
 
 void SimulationWorld::ComputeForces(int ConfigurationIndex)
 {
-	int Counter;
-
-	for (Counter = 0; Counter < NUM_BODIES; ++Counter)
+	if (EnableBall)
 	{
-		RigidBody& Body = Bodies[Counter];
-		BodyConfiguration& Configuration = Body.Configurations[ConfigurationIndex];
+		for (int Counter = 0; Counter < NUM_BODIES; ++Counter)
+		{
+			SphereBody& Body = Spheres[Counter];
+			BodyConfiguration& Configuration = Body.Configurations[ConfigurationIndex];
 
-		Configuration.Torque = Vec3f(0, 0, 0);
-		Configuration.CMForce = Vec3f(0, 0, 0);
+			Configuration.Torque = Vec3f(0, 0, 0);
+			Configuration.CMForce = Vec3f(0, 0, 0);
 
-		Configuration.CMForce += Gravity / Body.OneOverMass;
+			Configuration.CMForce += Gravity / Body.OneOverMass;
 
-		// damping
-		Configuration.CMForce += -Kdl * Configuration.CMVelocity;
-		Configuration.Torque += -Kda * Configuration.AngularVelocity;
+			// damping
+			Configuration.CMForce += -Kdl * Configuration.CMVelocity;
+			Configuration.Torque += -Kda * Configuration.AngularVelocity;
 
-		// no damping
-		/*Configuration.CMForce += -NoKdl * Configuration.CMVelocity;
-		Configuration.Torque += -NoKda * Configuration.AngularVelocity;*/
+			// no damping
+			/*Configuration.CMForce += -NoKdl * Configuration.CMVelocity;
+			Configuration.Torque += -NoKda * Configuration.AngularVelocity;*/
+		}
 	}
 
 	for (int NX = 0; NX < NUM_SPRING_X; ++NX)
@@ -379,10 +296,14 @@ void SimulationWorld::ComputeForces(int ConfigurationIndex)
 
 				Vec3f MyPos = Config.Position;
 				Vec3f OtherPos = Other->Configurations[ConfigurationIndex].Position;
-				Vec3f Direction = (OtherPos - MyPos).normalized();
+				Vec3f Direction = OtherPos - MyPos;
 				float Distance = MyPos.distance(OtherPos);
 
-				Config.Force += Direction * (SpringConstant * (Distance - SpringLength));
+				float Diff = (SpringLength - Distance) / Distance;
+				Vec3f P = Direction * Diff;
+
+				//Config.Force += Direction * (SpringConstant * (Distance - SpringLength));
+				Config.Force -= P * SpringConstant;
 			}
 
 			// Damping
@@ -391,46 +312,29 @@ void SimulationWorld::ComputeForces(int ConfigurationIndex)
 	}
 }
 
-void SimulationWorld::CalculateVertices(int ConfigurationIndex)
-{
-	for (int Counter = 0; Counter < NUM_BODIES; ++Counter)
-	{
-		RigidBody& Body = Bodies[Counter];
-		BodyConfiguration& Configuration = Body.Configurations[ConfigurationIndex];
-
-		const Matrix33f& A = Configuration.Orientation;
-		const Vec3f& R = Configuration.CMPosition;
-
-		assert(Body.NumberOfBoundingVertices < MAX_BOUNDING_VERTICES);
-		for (unsigned int i = 0; i < Body.NumberOfBoundingVertices; ++i)
-		{
-			Configuration.BoundingVertices[i] = R + A * Body.BoundingVertices[i];
-		}
-	}
-}
-
 void SimulationWorld::Integrate(float DeltaTime)
 {
-	int Counter;
-
-	for (Counter = 0; Counter < NUM_BODIES; ++Counter)
+	if (EnableBall)
 	{
-		BodyConfiguration& Source = Bodies[Counter].Configurations[SourceConfigurationIndex];
-		BodyConfiguration& Target = Bodies[Counter].Configurations[TargetConfigurationIndex];
+		for (int Counter = 0; Counter < NUM_BODIES; ++Counter)
+		{
+			BodyConfiguration& Source = Spheres[Counter].Configurations[SourceConfigurationIndex];
+			BodyConfiguration& Target = Spheres[Counter].Configurations[TargetConfigurationIndex];
 
-		Target.CMPosition = Source.CMPosition + DeltaTime * Source.CMVelocity;
-		
-		Target.Orientation = Source.Orientation + CreateSkewSymmetric(Source.AngularVelocity) * Source.Orientation * DeltaTime;
+			Target.CMPosition = Source.CMPosition + DeltaTime * Source.CMVelocity;
 
-		Target.CMVelocity = Source.CMVelocity + (DeltaTime * Bodies[Counter].OneOverMass) * Source.CMForce;
+			Target.Orientation = Source.Orientation + CreateSkewSymmetric(Source.AngularVelocity) * Source.Orientation * DeltaTime;
 
-		Target.AngularMomentum = Source.AngularMomentum + DeltaTime * Source.Torque;
+			Target.CMVelocity = Source.CMVelocity + (DeltaTime * Spheres[Counter].OneOverMass) * Source.CMForce;
 
-		OrthonormalizeOrientation(Target.Orientation);
+			Target.AngularMomentum = Source.AngularMomentum + DeltaTime * Source.Torque;
 
-		Target.InverseWorldInertiaTensor = Target.Orientation * Bodies[Counter].InverseBodyInertiaTensor * Target.Orientation.transposed();
+			OrthonormalizeOrientation(Target.Orientation);
 
-		Target.AngularVelocity = Target.InverseWorldInertiaTensor * Target.AngularMomentum;
+			Target.InverseWorldInertiaTensor = Target.Orientation * Spheres[Counter].InverseBodyInertiaTensor * Target.Orientation.transposed();
+
+			Target.AngularVelocity = Target.InverseWorldInertiaTensor * Target.AngularMomentum;
+		}
 	}
 
 	for (int NX = 0; NX < NUM_SPRING_X; ++NX)
@@ -456,6 +360,7 @@ CollisionState SimulationWorld::CheckForCollisions(int ConfigurationIndex)
 
 	const float DepthEpsilon = 0.001f;
 
+	/**
 	for (int BodyIndex = 0; BodyIndex < NUM_BODIES && State != CollisionState::Penetrating; ++BodyIndex)
 	{
 		RigidBody& Body = Bodies[BodyIndex];
@@ -492,6 +397,45 @@ CollisionState SimulationWorld::CheckForCollisions(int ConfigurationIndex)
 				}
 			}
 		}
+	}**/
+
+	if (EnableBall)
+	{
+		for (int SI = 0; SI < NUM_BODIES && State != CollisionState::Penetrating; ++SI)
+		{
+			auto& Body = Spheres[SI];
+			auto& Configuration = Body.Configurations[ConfigurationIndex];
+
+			for (int X = 0; X < NUM_SPRING_X && State != CollisionState::Penetrating; ++X)
+			{
+				for (int Y = 0; Y < NUM_SPRING_Y && State != CollisionState::Penetrating; ++Y)
+				{
+					auto& Node = Nodes[X][Y];
+					auto& NConfig = Node.Configurations[ConfigurationIndex];
+					float Dist = Configuration.CMPosition.distance(NConfig.Position);
+					if (Dist < 1.f)
+					{
+						Vec3f N = (Configuration.CMPosition - NConfig.Position).normalized();
+						float RV = N.dot(Configuration.CMVelocity);
+						if (RV < 0.f)
+						{
+							State = CollisionState::Colliding;
+							SpringCollisionX = X;
+							SpringCollisionY = Y;
+							SphereCollisionIndex = SI;
+						}
+					}
+					else if (Dist > 1.f && Dist < 1.f + DepthEpsilon)
+					{
+						/**
+						State = CollisionState::Colliding;
+						SpringCollisionX = X;
+						SpringCollisionY = Y;
+						SphereCollisionIndex = SI;**/
+					}
+				}
+			}
+		}
 	}
 
 	return State;
@@ -499,36 +443,53 @@ CollisionState SimulationWorld::CheckForCollisions(int ConfigurationIndex)
 
 void SimulationWorld::ResolveCollisions(int ConfigurationIndex)
 {
-	RigidBody& Body = Bodies[CollidingBodyIndex];
-	BodyConfiguration& Configuration = Body.Configurations[ConfigurationIndex];
+	auto& Body = Spheres[SphereCollisionIndex];
+	auto& Config = Body.Configurations[ConfigurationIndex];
 
-	Vec3f Position = Configuration.BoundingVertices[CollidingCornerIndex];
+	auto& Node = Nodes[SpringCollisionX][SpringCollisionY];
+	auto& NConfig = Node.Configurations[ConfigurationIndex];
 
-	Vec3f R = Position - Configuration.CMPosition;
+	float Dist = Config.CMPosition.distance(NConfig.Position);
+	float PenDist = 1.f - Dist;
+	Vec3f Force = (NConfig.Position - Config.CMPosition).normalized() * PenDist;
 
-	Vec3f Velocity = Configuration.CMVelocity + Configuration.AngularVelocity.cross(R);
+	Config.CMVelocity -= Force * Body.OneOverMass;
+	Config.AngularMomentum -= (NConfig.Position - Config.CMPosition).cross(Force * Body.OneOverMass) * 100000.f;
+	Config.AngularVelocity = Config.InverseWorldInertiaTensor * Config.AngularMomentum;
 
-	float ImpulseNumerator = -(1.f + Body.CoefficientOfRestitution) * Velocity.dot(CollisionNormal);
-
-	// In Hecker's original code, this was:
-	// Body.OneOverMass +
-	//	DotProduct(CrossProduct(Configuration.InverseWorldInertiaTensor *
-	//	CrossProduct(R, CollisionNormal), R),
-	//	CollisionNormal);
-	//
-	// Reading that inside-out to convert to Cinder's math libraries is a pain.
-	float ImpulseDenominator = Body.OneOverMass + (Configuration.InverseWorldInertiaTensor * R.cross(CollisionNormal)).cross(R).dot(CollisionNormal);
-
-	Vec3f Impulse = (ImpulseNumerator / ImpulseDenominator) * CollisionNormal;
-
-	Configuration.CMVelocity += Body.OneOverMass * Impulse;
-	Configuration.AngularMomentum += R.cross(Impulse);
-
-	Configuration.AngularVelocity = Configuration.InverseWorldInertiaTensor * Configuration.AngularMomentum;
+	NConfig.Velocity += Force;
 }
 
 void SimulationWorld::ResetSprings()
 {
+	for (int BodyIndex = 0; BodyIndex < NUM_BODIES; BodyIndex++)
+	{
+		SphereBody& Body = Spheres[BodyIndex];
+
+		float d2 = 0.2;
+		float dX2 = d2;
+		float dY2 = d2;
+		float dZ2 = d2;
+
+		Vec3f Position = Vec3f(0.f, 0.f, 5.f);
+		Body.Configurations[0].CMPosition = Position;
+		Body.Configurations[1].CMPosition = Position;
+
+		Body.Configurations[0].CMVelocity = Vec3f(0, 0, 0);
+		Body.Configurations[1].CMVelocity = Vec3f(0, 0, 0);
+
+		float Density = 0.4f;
+		float Mass = 8.f*Density*dX2*dY2*dZ2;
+		assert(Mass > 0.f);
+
+		Body.OneOverMass = 1.f / Mass;
+		Body.InverseBodyInertiaTensor.at(0, 0) = 3.f / (Mass*(dY2*dY2 + dZ2*dZ2));
+		Body.InverseBodyInertiaTensor.at(1, 1) = 3.f / (Mass*(dX2*dX2 + dZ2*dZ2));
+		Body.InverseBodyInertiaTensor.at(2, 2) = 3.f / (Mass*(dX2*dX2 + dY2*dY2));
+
+		Body.CoefficientOfRestitution = 1.f;
+	}
+
 	for (int NX = 0; NX < NUM_SPRING_X; ++NX)
 	{
 		for (int NY = 0; NY < NUM_SPRING_Y; ++NY)
